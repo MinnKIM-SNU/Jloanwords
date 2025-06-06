@@ -24,6 +24,10 @@
       padding: 1em 2em;
       font-size: 1em;
     }
+    #finalNote {
+      margin-top: 2em;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -35,19 +39,22 @@
     <script>
       const data = [
         { word: "旅館", audio: "旅館.mp3", image: "旅館.png", options: ["료캄", "료칸", "료캉"] },
-        { word: "天ぷら", audio: "天ぷら.mp3", image: "天ぷら.png", options: ["템푸라", "텐푸라", "텡푸라"] },
+        { word: "天ぷら", audio: "tempura.mp3", image: "tempura.png", options: ["템푸라", "텐푸라", "텡푸라"] },
         { word: "関西", audio: "関西.mp3", image: "関西.png", options: ["캄사이", "칸사이", "캉사이"] },
         { word: "番組", audio: "番組.mp3", image: "番組.png", options: ["밤구미", "반구미", "방구미"] },
         { word: "頑張る", audio: "頑張る.mp3", image: "頑張る.png", options: ["감바루", "간바루", "강바루"] },
         { word: "弁当", audio: "弁当.mp3", image: "弁当.png", options: ["벰토", "벤토", "벵토"] },
         { word: "牛丼", audio: "牛丼.mp3", image: "牛丼.png", options: ["규돔", "규돈", "규동"] },
         { word: "漫画", audio: "漫画.mp3", image: "漫画.png", options: ["맘가", "만가", "망가"] },
-        { word: "まんじゅう", audio: "まんじゅう.mp3", image: "まんじゅう.png", options: ["맘쥬", "만쥬", "망쥬"] },
-        { word: "せんべい", audio: "せんべい.mp3", image: "せんべい.png", options: ["셈베", "센베", "셍베"] },
+        { word: "まんじゅう", audio: "manjyu.mp3", image: "manjyu.png", options: ["맘쥬", "만쥬", "망쥬"] },
+        { word: "せんべい", audio: "senbei.mp3", image: "senbei.png", options: ["셈베", "센베", "셍베"] },
         { word: "近畿", audio: "近畿.mp3", image: "近畿.png", options: ["김키", "긴키", "깅키"] },
       ];
 
       const form = document.currentScript.parentElement;
+      const downloadButton = form.querySelector(".download-button");
+      downloadButton.disabled = true;
+
       data.forEach(entry => {
         const div = document.createElement('div');
         div.className = 'word-block';
@@ -73,18 +80,32 @@
           div.appendChild(label);
         });
 
-        form.insertBefore(div, form.querySelector('button'));
+        form.insertBefore(div, downloadButton);
+      });
+
+      form.addEventListener("change", () => {
+        const selects = form.querySelectorAll("select");
+        let allFilled = true;
+        selects.forEach(sel => {
+          if (sel.value === "") allFilled = false;
+        });
+        downloadButton.disabled = !allFilled;
       });
     </script>
 
     <button type="button" class="download-button" onclick="downloadResults()">결과 파일 다운받기</button>
   </form>
 
+  <p id="finalNote">
+    체크를 마치셨다면, 결과 파일 다운받기를 눌러 파일을 다운받으신 후,<br>
+    <strong>minnkim@snu.ac.kr</strong> 또는 <a href="https://open.kakao.com/o/sQJxMpAh" target="_blank">오픈카톡</a> (또는 그 외 제 연락처가 있다면 그쪽으로) 전송해 주세요.
+  </p>
+
   <script>
     function downloadResults() {
       const form = document.getElementById("surveyForm");
       const selects = form.querySelectorAll("select");
-      let csv = "Word\tKOREAN\tScore\n";
+      let csv = "\uFEFFWord\tKOREAN\tScore\n"; // BOM 추가로 UTF-8 인식 강화
 
       selects.forEach(select => {
         const value = select.value;
@@ -104,3 +125,4 @@
   </script>
 </body>
 </html>
+
