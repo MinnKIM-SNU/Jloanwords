@@ -34,65 +34,6 @@
   <h1>📢 소리를 들어 주세요</h1>
   <p>주어진 일본어 단어를 한국어에서 사용한다고 할 때, 다음 선택지들이 얼마나 적당한지를 1점부터 5점까지 매겨 주세요.</p>
   <form id="surveyForm">
-
-    <!-- 아래 반복 구조를 사용하여 모든 항목 생성 -->
-    <script>
-      const data = [
-        { word: "旅館", audio: "旅館.mp3", image: "旅館.png", options: ["료캄", "료칸", "료캉"] },
-        { word: "天ぷら", audio: "tempura.mp3", image: "tempura.png", options: ["템푸라", "텐푸라", "텡푸라"] },
-        { word: "関西", audio: "関西.mp3", image: "関西.png", options: ["캄사이", "칸사이", "캉사이"] },
-        { word: "番組", audio: "番組.mp3", image: "番組.png", options: ["밤구미", "반구미", "방구미"] },
-        { word: "頑張る", audio: "頑張る.mp3", image: "頑張る.png", options: ["감바루", "간바루", "강바루"] },
-        { word: "弁当", audio: "弁当.mp3", image: "弁当.png", options: ["벰토", "벤토", "벵토"] },
-        { word: "牛丼", audio: "牛丼.mp3", image: "牛丼.png", options: ["규돔", "규돈", "규동"] },
-        { word: "漫画", audio: "漫画.mp3", image: "漫画.png", options: ["맘가", "만가", "망가"] },
-        { word: "まんじゅう", audio: "manjyu.mp3", image: "manjyu.png", options: ["맘쥬", "만쥬", "망쥬"] },
-        { word: "せんべい", audio: "senbei.mp3", image: "senbei.png", options: ["셈베", "센베", "셍베"] },
-        { word: "近畿", audio: "近畿.mp3", image: "近畿.png", options: ["김키", "긴키", "깅키"] },
-      ];
-
-      const form = document.currentScript.parentElement;
-      const downloadButton = form.querySelector(".download-button");
-      downloadButton.disabled = true;
-
-      data.forEach(entry => {
-        const div = document.createElement('div');
-        div.className = 'word-block';
-        div.dataset.word = entry.word;
-
-        div.innerHTML = `
-          <audio controls src="${entry.audio}"></audio>
-          <img src="${entry.image}" alt="${entry.word}" width="100">
-          <h3>${entry.word}</h3>
-        `;
-
-        entry.options.forEach(opt => {
-          const label = document.createElement('label');
-          label.className = 'option-label';
-          label.innerHTML = `${opt} <select name="${entry.word}|${opt}">
-            <option value="">점수 선택</option>
-            <option value="1">1점 아주 부적합함</option>
-            <option value="2">2점 약간 부적합함</option>
-            <option value="3">3점 보통임</option>
-            <option value="4">4점 약간 적합함</option>
-            <option value="5">5점 매우 적합함</option>
-          </select>`;
-          div.appendChild(label);
-        });
-
-        form.insertBefore(div, downloadButton);
-      });
-
-      form.addEventListener("change", () => {
-        const selects = form.querySelectorAll("select");
-        let allFilled = true;
-        selects.forEach(sel => {
-          if (sel.value === "") allFilled = false;
-        });
-        downloadButton.disabled = !allFilled;
-      });
-    </script>
-
     <button type="button" class="download-button" onclick="downloadResults()">결과 파일 다운받기</button>
   </form>
 
@@ -102,26 +43,83 @@
   </p>
 
   <script>
-    function downloadResults() {
-      const form = document.getElementById("surveyForm");
-      const selects = form.querySelectorAll("select");
-      let csv = "\uFEFFWord\tKOREAN\tScore\n"; // BOM 추가로 UTF-8 인식 강화
+  window.onload = function () {
+    const data = [
+      { word: "旅館", audio: "ryokan.mp3", image: "ryokan.png", options: ["료캄", "료칸", "료캉"] },
+      { word: "天ぷら", audio: "tempura.mp3", image: "tempura.png", options: ["템푸라", "텐푸라", "텡푸라"] },
+      { word: "関西", audio: "kansai.mp3", image: "kansai.png", options: ["캄사이", "칸사이", "캉사이"] },
+      { word: "番組", audio: "bangumi.mp3", image: "bangumi.png", options: ["밤구미", "반구미", "방구미"] },
+      { word: "頑張る", audio: "ganbaru.mp3", image: "ganbaru.png", options: ["감바루", "간바루", "강바루"] },
+      { word: "弁当", audio: "bento.mp3", image: "bento.png", options: ["벰토", "벤토", "벵토"] },
+      { word: "牛丼", audio: "gyudon.mp3", image: "gyudon.png", options: ["규돔", "규돈", "규동"] },
+      { word: "漫画", audio: "manga.mp3", image: "manga.png", options: ["맘가", "만가", "망가"] },
+      { word: "まんじゅう", audio: "manjuu.mp3", image: "manjuu.png", options: ["맘쥬", "만쥬", "망쥬"] },
+      { word: "せんべい", audio: "senbei.mp3", image: "senbei.png", options: ["셈베", "센베", "셍베"] },
+      { word: "近畿", audio: "kinki.mp3", image: "kinki.png", options: ["김키", "긴키", "깅키"] }
+    ];
 
-      selects.forEach(select => {
-        const value = select.value;
-        if (value !== "") {
-          const [word, korean] = select.name.split("|");
-          csv += `${word}\t${korean}\t${value}\n`;
-        }
+    const form = document.getElementById("surveyForm");
+    const downloadButton = form.querySelector(".download-button");
+    downloadButton.disabled = true;
+
+    data.forEach(entry => {
+      const div = document.createElement('div');
+      div.className = 'word-block';
+      div.dataset.word = entry.word;
+
+      div.innerHTML = `
+        <audio controls src="${entry.audio}"></audio>
+        <img src="${entry.image}" alt="${entry.word}" width="100">
+        <h3>${entry.word}</h3>
+      `;
+
+      entry.options.forEach(opt => {
+        const label = document.createElement('label');
+        label.className = 'option-label';
+        label.innerHTML = `${opt} <select name="${entry.word}|${opt}">
+          <option value="">점수 선택</option>
+          <option value="1">1점 아주 부적합함</option>
+          <option value="2">2점 약간 부적합함</option>
+          <option value="3">3점 보통임</option>
+          <option value="4">4점 약간 적합함</option>
+          <option value="5">5점 매우 적합함</option>
+        </select>`;
+        div.appendChild(label);
       });
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", "likert_results.csv");
-      link.click();
-    }
+      form.insertBefore(div, downloadButton);
+    });
+
+    form.addEventListener("change", () => {
+      const selects = form.querySelectorAll("select");
+      let allFilled = true;
+      selects.forEach(sel => {
+        if (sel.value === "") allFilled = false;
+      });
+      downloadButton.disabled = !allFilled;
+    });
+  };
+
+  function downloadResults() {
+    const form = document.getElementById("surveyForm");
+    const selects = form.querySelectorAll("select");
+    let csv = "\uFEFFWord\tKOREAN\tScore\n";
+
+    selects.forEach(select => {
+      const value = select.value;
+      if (value !== "") {
+        const [word, korean] = select.name.split("|");
+        csv += `${word}\t${korean}\t${value}\n`;
+      }
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "likert_results.csv");
+    link.click();
+  }
   </script>
 </body>
 </html>
